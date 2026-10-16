@@ -43,9 +43,10 @@ interface PersonWithChildren extends SimplePerson {
 
 interface ChildRelation {
   id: number;
-  marriage: { 
-    husband: PersonWithChildren; 
-    wife: PersonWithChildren; 
+  marriage: {
+    husband: PersonWithChildren;
+    wife: PersonWithChildren;
+    children: { id: number; person: SimplePerson }[];
   };
   person: SimplePerson;
 }
@@ -240,6 +241,7 @@ export default function ProfilPage() {
 
   const marriages  = person.jenisKelamin === "LAKI_LAKI" ? person.marriagesAsHusband : person.marriagesAsWife;
   const parentInfo = person.children.length > 0 ? person.children[0].marriage : null;
+  const siblings = parentInfo?.children?.filter(child => child.person.id !== person.id) ?? [];
 
   // Extract grandparents (opung) from father's parents
   let grandparentInfo: { husband: SimplePerson; wife: SimplePerson } | null = null;
@@ -503,6 +505,20 @@ export default function ProfilPage() {
                     <PersonChip id={parentInfo.husband.id} nama={parentInfo.husband.nama} />
                     <span style={{ color: C.emasT, fontSize: "0.8rem" }}>×</span>
                     <PersonChip id={parentInfo.wife.id}    nama={parentInfo.wife.nama} />
+                  </div>
+                </div>
+              )}
+
+              {/* Saudara */}
+              {siblings.length > 0 && (
+                <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: `1px solid rgba(201,168,76,.08)` }}>
+                  <span style={{ fontFamily: "'Cinzel',serif", fontSize: "0.54rem", letterSpacing: "0.28em", textTransform: "uppercase", color: C.emasT, display: "block", marginBottom: 10 }}>
+                    Saudara ({siblings.length})
+                  </span>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {siblings.map(sibling => (
+                      <PersonChip key={sibling.id} id={sibling.person.id} nama={sibling.person.nama} />
+                    ))}
                   </div>
                 </div>
               )}

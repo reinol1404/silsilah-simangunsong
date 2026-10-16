@@ -71,6 +71,11 @@ export async function GET(request: NextRequest) {
                       },
                     },
                   },
+                  children: {
+                    include: {
+                      person: true,
+                    },
+                  },
                 },
               },
             },
