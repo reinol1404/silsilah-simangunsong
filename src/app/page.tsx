@@ -75,7 +75,7 @@ const features = [
     number:"01",
     title:"Pohon Silsilah Interaktif",
     icon:<TreeIcon/>,
-    desc:"Telusuri hubungan orang tua, pasangan, dan anak dalam struktur tarombo marga Simangunsong secara visual per generasi.",
+    desc:"Telusuri hubungan orang tua, pasangan, dan, anak dalam struktur tarombo marga Simangunsong secara visual per generasi.",
     points:["Filter 3-10 generasi atau tampilkan semua","Mode fokus untuk menelusuri satu garis keluarga","Panel detail dengan relasi inti dan anak-anak"],
     href:"/tarombo",
     cta:"Buka Tarombo",
