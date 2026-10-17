@@ -504,7 +504,7 @@ export default function HomePage() {
             </button>
 
             <img
-              src="/disclaimer.png"
+              src="/disclaimer2.png"
               alt="Disclaimer"
               style={{
                 display:"block",
@@ -550,7 +550,7 @@ export default function HomePage() {
             {/* Foto di tengah */}
       <div className="fu d3" style={{flexShrink:0,position:"relative",marginBottom:40}}>
         <div className="hero-photo-img" style={{position:"relative",width:"clamp(150px,16vw,200px)",overflow:"hidden",border:`2px solid ${C.emas}`}}>
-          <img src="/kosmos final.png" alt="Kosmas Simangunsong" style={{display:"block",width:"100%",height:"auto",objectFit:"cover"}}/>
+          <img src="/kosmos final2.png" alt="Kosmas Simangunsong" style={{display:"block",width:"100%",height:"auto",objectFit:"cover"}}/>
         </div>
       </div>
 
