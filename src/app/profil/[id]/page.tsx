@@ -30,6 +30,7 @@ interface Marriage {
 interface SimplePerson {
   id: number;
   nama: string;
+  jenisKelamin?: "LAKI_LAKI" | "PEREMPUAN";
 }
 
 interface PersonWithChildren extends SimplePerson {
@@ -151,17 +152,20 @@ const InfoRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 // ─── Styled Link/Person Chip ──────────────────────────────────────────────────
-const PersonChip = ({ id, nama }: { id: number; nama: string }) => (
+const PersonChip = ({ id, nama, jenisKelamin }: { id: number; nama: string; jenisKelamin?: SimplePerson["jenisKelamin"] }) => {
+  const chipColor = jenisKelamin === "LAKI_LAKI" ? "#79B7D8" : jenisKelamin === "PEREMPUAN" ? "#D98BA5" : C.emas;
+  return (
   <Link href={`/profil/${id}`} style={{
     fontFamily: "'Cinzel',serif", fontSize: "0.68rem", letterSpacing: "0.06em",
-    color: C.emas, textDecoration: "none", border: `1px solid rgba(201,168,76,.25)`,
+    color: chipColor, textDecoration: "none", border: `1px solid ${chipColor}`,
     padding: "4px 14px", display: "inline-block", transition: "all .25s",
     clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)",
-    background: "rgba(201,168,76,.05)",
+    background: "rgba(255,255,255,.04)",
   }} className="chip-hover">
     {nama}
   </Link>
-);
+  );
+};
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function ProfilPage() {
@@ -242,6 +246,8 @@ export default function ProfilPage() {
   const marriages  = person.jenisKelamin === "LAKI_LAKI" ? person.marriagesAsHusband : person.marriagesAsWife;
   const parentInfo = person.children.length > 0 ? person.children[0].marriage : null;
   const siblings = parentInfo?.children?.filter(child => child.person.id !== person.id) ?? [];
+  const brothers = siblings.filter(sibling => sibling.person.jenisKelamin === "LAKI_LAKI");
+  const sisters = siblings.filter(sibling => sibling.person.jenisKelamin === "PEREMPUAN");
 
   // Extract grandparents (opung) from father's parents
   let grandparentInfo: { husband: SimplePerson; wife: SimplePerson } | null = null;
@@ -515,11 +521,26 @@ export default function ProfilPage() {
                   <span style={{ fontFamily: "'Cinzel',serif", fontSize: "0.54rem", letterSpacing: "0.28em", textTransform: "uppercase", color: C.emasT, display: "block", marginBottom: 10 }}>
                     Saudara ({siblings.length})
                   </span>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {siblings.map(sibling => (
-                      <PersonChip key={sibling.id} id={sibling.person.id} nama={sibling.person.nama} />
-                    ))}
-                  </div>
+                  {brothers.length > 0 && (
+                    <div style={{ marginBottom: sisters.length > 0 ? 14 : 0 }}>
+                      <span style={{ fontSize: "0.72rem", color: "#79B7D8", display: "block", marginBottom: 7 }}>Saudara Laki-laki</span>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {brothers.map(sibling => (
+                          <PersonChip key={sibling.id} id={sibling.person.id} nama={sibling.person.nama} jenisKelamin={sibling.person.jenisKelamin} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {sisters.length > 0 && (
+                    <div>
+                      <span style={{ fontSize: "0.72rem", color: "#D98BA5", display: "block", marginBottom: 7 }}>Saudara Perempuan</span>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {sisters.map(sibling => (
+                          <PersonChip key={sibling.id} id={sibling.person.id} nama={sibling.person.nama} jenisKelamin={sibling.person.jenisKelamin} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -562,11 +583,12 @@ export default function ProfilPage() {
                               <span style={{ fontFamily: "'Cinzel',serif", fontSize: "0.5rem", letterSpacing: "0.22em", textTransform: "uppercase", color: C.emasT, opacity: .7, display: "block", marginBottom: 8 }}>
                                 Anak ({m.children.length})
                               </span>
-                              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                                 {m.children.map(ch => (
                                   <Link key={ch.id} href={`/profil/${ch.person.id}`} className="child-item" style={{
-                                    fontFamily: "'Cormorant Garamond',serif", fontSize: "0.85rem",
-                                    color: C.kremT, textDecoration: "none", transition: "color .25s", opacity: .75,
+                                    fontFamily: "'Cormorant Garamond',serif", fontSize: "0.9rem",
+                                    color: C.kremT, textDecoration: "none", transition: "color .25s", opacity: .9,
+                                    padding: "8px 0", borderBottom: `1px solid rgba(201,168,76,.1)`,
                                   }}>
                                     {ch.person.nama}
                                   </Link>

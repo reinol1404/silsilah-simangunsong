@@ -156,59 +156,23 @@ function useCounter(target: number, duration = 1800, active = false) {
 }
 
 // ─── UI Pieces ────────────────────────────────────────────────────────────────
-const UlosStripe = () => (
-  <div style={{height:6,width:260,margin:"0 auto",
-    background:`repeating-linear-gradient(90deg,${C.merah} 0px,${C.merah} 14px,${C.emas} 14px,${C.emas} 20px,${C.hitam} 20px,${C.hitam} 26px,${C.emas} 26px,${C.emas} 32px,${C.merah} 32px,${C.merah} 46px,${C.hitam} 46px,${C.hitam} 50px)`
-  }}/>
-);
-
-const HeroDivider = () => (
-  <div style={{display:"flex",alignItems:"center",gap:14,margin:"0 auto 28px",width:"fit-content"}}>
-    <div style={{width:80,height:1,background:`linear-gradient(90deg,transparent,${C.emas})`}}/>
-    <div style={{width:8,height:8,background:C.emas,transform:"rotate(45deg)"}}/>
-    <div style={{width:5,height:5,background:C.emas,transform:"rotate(45deg)",opacity:.5}}/>
-    <div style={{width:8,height:8,background:C.emas,transform:"rotate(45deg)"}}/>
-    <div style={{width:80,height:1,background:`linear-gradient(90deg,${C.emas},transparent)`}}/>
-  </div>
-);
-
-const GorgaDivider = () => (
-  <div style={{width:"100%",height:60,background:C.merahTua,overflow:"hidden",position:"relative",zIndex:10}}>
-    <svg viewBox="0 0 800 60" width="100%" height="60" preserveAspectRatio="xMidYMid meet" style={{opacity:.85}}>
-      <defs>
-        <pattern id="gorga" x="0" y="0" width="40" height="60" patternUnits="userSpaceOnUse">
-          <polygon points="20,4 36,18 20,32 4,18" fill="none" stroke={C.emas} strokeWidth="1.2"/>
-          <line x1="20" y1="4" x2="20" y2="56" stroke={C.merah} strokeWidth=".8" opacity=".6"/>
-          <line x1="4"  y1="30" x2="36" y2="30" stroke={C.merah} strokeWidth=".8" opacity=".6"/>
-          <circle cx="2"  cy="30" r="2" fill={C.emas} opacity=".7"/>
-          <circle cx="38" cy="30" r="2" fill={C.emas} opacity=".7"/>
-          <polyline points="8,38 20,52 32,38" fill="none" stroke={C.emas} strokeWidth="1" opacity=".8"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#gorga)"/>
-    </svg>
-  </div>
-);
-
-const UlosBorder = () => (
-  <div style={{height:8,width:"100%",
-    background:`repeating-linear-gradient(90deg,${C.merahTua} 0px,${C.merahTua} 20px,${C.emasT} 20px,${C.emasT} 28px,${C.hitam} 28px,${C.hitam} 36px,${C.emasT} 36px,${C.emasT} 44px,${C.merahTua} 44px,${C.merahTua} 64px,${C.hitam} 64px,${C.hitam} 68px)`
-  }}/>
-);
+const UlosStripe = () => null;
+const HeroDivider = () => null;
+const UlosBorder = () => null;
 
 const btnPrimary: CSSProperties = {
-  fontFamily:"'Cinzel',serif",fontSize:"0.72rem",letterSpacing:"0.2em",
+  fontFamily:"Inter, 'Segoe UI', sans-serif",fontSize:"0.84rem",letterSpacing:"0.02em",
   textTransform:"uppercase",color:C.hitam,fontWeight:600,
-  background:`linear-gradient(135deg,${C.emas} 0%,${C.emasM} 50%,${C.emas} 100%)`,
-  padding:"14px 36px",textDecoration:"none",display:"inline-block",
-  clipPath:"polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)",
+  background:C.emas,
+  padding:"11px 24px",textDecoration:"none",display:"inline-block",
+  borderRadius:6,
   transition:"all .3s",cursor:"pointer",border:"none",
 };
 const btnSecondary: CSSProperties = {
-  fontFamily:"'Cinzel',serif",fontSize:"0.72rem",letterSpacing:"0.2em",
+  fontFamily:"Inter, 'Segoe UI', sans-serif",fontSize:"0.84rem",letterSpacing:"0.02em",
   textTransform:"uppercase",color:C.emas,background:"transparent",
-  border:`1px solid rgba(201,168,76,.5)`,padding:"14px 36px",textDecoration:"none",
-  display:"inline-block",clipPath:"polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)",
+  border:`1px solid ${C.emas}`,padding:"11px 24px",textDecoration:"none",
+  display:"inline-block",borderRadius:6,
   transition:"all .3s",
 };
 
@@ -239,7 +203,7 @@ const StatCard = ({value,label,desc,index,active}:{value:number;label:string;des
       {index > 0 && (
         <div className="stat-sep" style={{position:"absolute",left:0,top:"20%",height:"60%",width:1,background:`linear-gradient(to bottom,transparent,${C.emasT},transparent)`}}/>
       )}
-      <div style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"3rem",fontWeight:700,color:C.emas,lineHeight:1,marginBottom:8,textShadow:`0 0 30px rgba(201,168,76,.4)`}}>
+      <div style={{fontFamily:"Inter, 'Segoe UI', sans-serif",fontSize:"2.4rem",fontWeight:700,color:C.emas,lineHeight:1,marginBottom:8}}>
         {count.toLocaleString("id-ID")}
       </div>
       <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:"0.25em",textTransform:"uppercase",color:C.kremT,opacity:.7,marginBottom:4}}>{label}</div>
@@ -250,21 +214,14 @@ const StatCard = ({value,label,desc,index,active}:{value:number;label:string;des
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [scrolled,   setScrolled]   = useState(false);
   const [stats,      setStats]      = useState<Stats | null>(null);
   const [donaturs,   setDonaturs]   = useState<Donatur[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [statsActive, setStatsActive] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showPhotoPopup, setShowPhotoPopup] = useState(true);
+  const [showPhotoPopup, setShowPhotoPopup] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
-
-  // Scroll listener untuk navbar
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+  
 
   // Cek status login admin
   useEffect(() => {
@@ -319,6 +276,33 @@ export default function HomePage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showPhotoPopup]);
 
+  
+  // Popup disclaimer muncul 3 detik setelah website dibuka,
+  // tetapi hanya sekali selama sesi tab browser.
+  useEffect(() => {
+    const storageKey = "silsilah-disclaimer-shown";
+
+    try {
+      if (sessionStorage.getItem(storageKey) === "true") {
+        return;
+      }
+    } catch {
+      // Jika storage tidak tersedia, popup tetap bisa ditampilkan.
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowPhotoPopup(true);
+
+      try {
+        sessionStorage.setItem(storageKey, "true");
+      } catch {
+        // Abaikan jika storage tidak tersedia.
+      }
+    }, 3000);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const statsData = stats
     ? [
         { value: stats.totalPerson,   label: "Anggota Tercatat",  desc: "Dalam database silsilah" },
@@ -336,7 +320,6 @@ export default function HomePage() {
 
       {/* ── Google Fonts + Global CSS ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { background-color: ${C.hitam}; }
@@ -362,14 +345,17 @@ export default function HomePage() {
         .d11  { animation-delay:1.1s; } .d13 { animation-delay:1.3s; }
         .d15  { animation-delay:1.5s; } .d21 { animation-delay:2.1s; }
 
-        .btn-p:hover  { transform:translateY(-2px); box-shadow:0 8px 28px rgba(201,168,76,.4); }
-        .btn-s:hover  { border-color:${C.emas}!important; background:rgba(201,168,76,.08)!important; transform:translateY(-2px); }
+        .btn-p:hover  { filter:brightness(1.08); }
+        .btn-s:hover  { border-color:${C.emas}!important; background:${C.emas}!important; color:${C.hitam}!important; }
         .nav-a:hover  { color:${C.emas}!important; }
-        .feat-card:hover { border-color:rgba(201,168,76,.3)!important; transform:translateY(-4px); }
+        .feat-card:hover { border-color:${C.emas}!important; transform:translateY(-2px); }
         .feat-card:hover .feat-line { opacity:1!important; }
         .person-card > div:hover { border-color:rgba(201,168,76,.35)!important; transform:translateY(-3px); }
         .donate-card:hover { transform:translateY(-4px) !important; }
-        .home-popup-close:hover { color:${C.emas}!important; border-color:rgba(201,168,76,.55)!important; background:rgba(201,168,76,.08)!important; }
+        .home-popup-close:hover { color:${C.hitam}!important; border-color:${C.emas}!important; background:${C.emas}!important; }
+        h1,h2,h3,h4 { font-family:Georgia, "Times New Roman", serif!important; text-shadow:none!important; }
+        p,a,button,li { font-family:Inter, "Segoe UI", Arial, sans-serif!important; }
+        *,*::before,*::after { box-shadow:none!important; }
         @media (max-width:768px) { .donate-grid { grid-template-columns:1fr!important; } }
         .footer-a:hover  { opacity:1!important; color:${C.emas}!important; }
 
@@ -439,17 +425,12 @@ export default function HomePage() {
         }
       `}</style>
 
-      {/* Gorga bg */}
-      <div style={{position:"fixed",inset:0,zIndex:0,opacity:.04,pointerEvents:"none",
-        backgroundImage:`repeating-linear-gradient(45deg,${C.emas} 0,${C.emas} 1px,transparent 0,transparent 50%),repeating-linear-gradient(-45deg,${C.emas} 0,${C.emas} 1px,transparent 0,transparent 50%)`,
-        backgroundSize:"28px 28px"}}/>
-
       {/* ── Navbar ── */}
       <nav style={{
         position:"fixed",top:0,width:"100%",zIndex:50,
         padding:"18px 56px",display:"flex",justifyContent:"space-between",alignItems:"center",
-        background: scrolled ? `rgba(13,11,8,.97)` : `linear-gradient(to bottom,rgba(13,11,8,.95),transparent)`,
-        borderBottom: scrolled ? `1px solid rgba(201,168,76,.15)` : "none",
+        background: C.hitamL,
+        borderBottom: `1px solid ${C.merahTua}`,
         transition:"all .4s",
       }}>
         <Link href="/" style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"1rem",color:C.emas,textDecoration:"none"}}>
@@ -494,7 +475,6 @@ export default function HomePage() {
             maxWidth:"94vw",
             border:`1px solid rgba(201,168,76,.28)`,
             background:"rgba(13,11,8,.98)",
-            boxShadow:"0 20px 70px rgba(0,0,0,.75)",
             animation:"popupIn .25s ease",
             overflow:"hidden",
             position:"relative",
@@ -541,71 +521,54 @@ export default function HomePage() {
       )}
 
       {/* ── Hero ── */}
-      <section className="hero-section" style={{position:"relative",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"120px 72px 100px",zIndex:2,overflow:"hidden"}}>
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:800,height:800,pointerEvents:"none",background:"radial-gradient(ellipse at center,rgba(139,26,26,.15) 0%,rgba(201,168,76,.04) 50%,transparent 72%)"}}/>
-        <div className="side-line" style={{position:"absolute",left:56,top:0,width:2,height:"100%",opacity:.5,background:`linear-gradient(to bottom,transparent,${C.merah} 30%,${C.merah} 70%,transparent)`}}/>
-        <div className="side-line" style={{position:"absolute",right:56,top:0,width:2,height:"100%",opacity:.5,background:`linear-gradient(to bottom,transparent,${C.merah} 30%,${C.merah} 70%,transparent)`}}/>
+<section className="hero-section" style={{position:"relative",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"120px 72px 100px",zIndex:2,overflow:"hidden"}}>
+  {/* Satu kolom, semua rata tengah */}
+  <div className="hero-two-col" style={{display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:"clamp(24px,4vw,40px)",maxWidth:800,width:"100%"}}>
 
-        {/* Two-column layout */}
-        <div className="hero-two-col" style={{display:"flex",alignItems:"center",gap:"clamp(40px,6vw,96px)",maxWidth:1100,width:"100%",flexWrap:"wrap",justifyContent:"center"}}>
+    
 
-          {/* LEFT: Foto */}
-          <div className="fu d3" style={{flexShrink:0,position:"relative"}}>
-            {/* Corner brackets */}
-           
-            {/* Ulos stripe top */}
-            <div style={{position:"absolute",top:-18,left:0,right:0,height:6,zIndex:1,background:`repeating-linear-gradient(90deg,${C.merahTua} 0,${C.merahTua} 10px,${C.emasT} 10px,${C.emasT} 16px,${C.hitam} 16px,${C.hitam} 22px,${C.emasT} 22px,${C.emasT} 28px,${C.merahTua} 28px,${C.merahTua} 38px)`}}/>
-            {/* Ulos stripe bottom */}
-            <div style={{position:"absolute",bottom:-18,left:0,right:0,height:6,zIndex:1,background:`repeating-linear-gradient(90deg,${C.merahTua} 0,${C.merahTua} 10px,${C.emasT} 10px,${C.emasT} 16px,${C.hitam} 16px,${C.hitam} 22px,${C.emasT} 22px,${C.emasT} 28px,${C.merahTua} 28px,${C.merahTua} 38px)`}}/>
-            {/* Photo */}
-            <div className="hero-photo-img" style={{position:"relative",width:"clamp(180px,20vw,240px)",overflow:"hidden",border:`1px solid rgba(201,168,76,0.35)`,boxShadow:`0 0 0 4px rgba(13,11,8,0.9),0 0 0 5px rgba(201,168,76,0.15),0 24px 60px rgba(0,0,0,0.7),0 0 80px rgba(139,26,26,0.2)`}}>
-              <div style={{position:"absolute",inset:0,zIndex:1,background:"linear-gradient(to bottom,rgba(13,11,8,0.2) 0%,transparent 25%,transparent 70%,rgba(13,11,8,0.4) 100%)",pointerEvents:"none"}}/>
-              <img src="/kosmos final.png" alt="Kosmas Simangunsong" style={{display:"block",width:"100%",height:"auto",objectFit:"cover",filter:"sepia(10%) contrast(1.05) brightness(0.93)"}}/>
-            </div>
-            {/* Caption */}
-            <div style={{marginTop:18,textAlign:"center",borderTop:`1px solid rgba(201,168,76,0.2)`,paddingTop:10}}>
-              <p style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"0.68rem",color:C.emas,letterSpacing:"0.08em"}}>Kosmas Simangunsong</p>
-              <p style={{fontFamily:"'IM Fell English',serif",fontStyle:"italic",fontSize:"0.65rem",color:C.putih,opacity:.7,marginTop:2}}>Panuturi Simangunsong</p>
-            </div>
-          </div>
-
-          {/* RIGHT: Text */}
-          <div className="hero-text" style={{flex:1,minWidth:280,textAlign:"left"}}>
-            <div className="fu d3" style={{marginBottom:22}}><UlosStripe/></div>
-            <p className="fu d5" style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",letterSpacing:"0.45em",textTransform:"uppercase",color:C.emas,marginBottom:20}}>
-              Tarombo · Silsilah · Marga
-            </p>
-            <h1 className="fu d7 hero-h1" style={{fontFamily:"'Cinzel Decorative',cursive",fontWeight:900,lineHeight:1.08,color:C.putih,marginBottom:12,fontSize:"clamp(2rem,5vw,5rem)",textShadow:`0 0 60px rgba(201,168,76,.3),0 4px 20px rgba(0,0,0,.8)`}}>
-              <span style={{color:C.emas}}>Silsilah</span><br/>
-              <span style={{color:C.merahTerang}}>Simangunsong</span>
-            </h1>
-            <p className="fu d9 hero-subtitle" style={{fontFamily:"'Cinzel Decorative',cursive",color:C.emasM,letterSpacing:"0.12em",marginBottom:22,fontSize:"clamp(0.9rem,2vw,1.5rem)"}}>
-              Marga Na Gok
-            </p>
-            <div className="fu d11" style={{marginBottom:22}}><HeroDivider/></div>
-            <p className="fu d11 hero-desc" style={{fontFamily:"'IM Fell English',serif",fontStyle:"italic",color:C.kremT,maxWidth:500,lineHeight:1.78,marginBottom:14,fontSize:"clamp(1rem,1.8vw,1.25rem)"}}>
-              Silsilah na so lupa, na so hasa Raja Simangunsong, anak, boru, bere dohot ibebere asa gabe parjambar, parhundul dohot partutur na mangolu di bagasan holong na sian Debata Jahowa. 
-
-            </p>
-            <p className="fu d13 hero-quote" style={{fontSize:"0.8rem",color:C.emasT,letterSpacing:"0.08em",marginBottom:40}}>
-              &ldquo;Menjaga, Merawat dan Membumikan Nilai-nilai, Histori dan Silsilah Simangunsong yang Adaltif dengan Kultur Kekinian.&rdquo;
-            </p>
-            <div className="fu d15 hero-btns" style={{display:"flex",gap:16,flexWrap:"wrap"}}>
-              <Link href="/tarombo" className="btn-p" style={btnPrimary}>Jelajahi Pohon Silsilah</Link>
-              <Link href="/tentang" className="btn-s" style={btnSecondary}>Tentang Website</Link>
-              <Link href="/cari"    className="btn-s" style={btnSecondary}>Cari Anggota</Link>
-            </div>
-          </div>
+    {/* Teks rata tengah */}
+    <div className="hero-text" style={{width:"100%",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center"}}>
+      <div className="fu d3" style={{marginBottom:22}}><UlosStripe/></div>
+      <p className="fu d5" style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",letterSpacing:"0.45em",textTransform:"uppercase",color:C.emas,marginBottom:20}}>
+        Tarombo · Silsilah · Marga
+      </p>
+      <h1 className="fu d7 hero-h1" style={{fontFamily:"Georgia, 'Times New Roman', serif",fontWeight:800,lineHeight:1.08,color:C.putih,marginBottom:12,fontSize:"clamp(1.9rem,4vw,3.2rem)",textAlign:"center"}}>
+        <span style={{color:C.emas}}>Silsilah</span><br/>
+        <span style={{color:C.merahTerang}}>Simangunsong</span>
+      </h1>
+      <p className="fu d9 hero-subtitle" style={{fontFamily:"'Cinzel Decorative',cursive",color:C.emasM,letterSpacing:"0.12em",marginBottom:22,fontSize:"clamp(0.9rem,2vw,1.5rem)"}}>
+        Marga Na Gok
+      </p>
+      <div className="fu d11" style={{marginBottom:22}}><HeroDivider/></div>
+      <p className="fu d11 hero-desc" style={{fontFamily:"'IM Fell English',serif",fontStyle:"italic",color:C.kremT,maxWidth:560,margin:"0 auto 14px",lineHeight:1.78,fontSize:"clamp(1rem,1.8vw,1.25rem)"}}>
+        Silsilah na so lupa, na so hasa Raja Simangunsong, anak, boru, bere dohot ibebere asa gabe parjambar, parhundul dohot partutur na mangolu di bagasan holong na sian Debata Jahowa.
+      </p>
+      <p className="fu d13 hero-quote" style={{fontSize:"0.8rem",color:C.emasT,letterSpacing:"0.08em",maxWidth:560,margin:"0 auto 40px"}}>
+        &ldquo;Menjaga, Merawat dan Membumikan Nilai-nilai, Histori dan Silsilah Simangunsong yang Adaltif dengan Kultur Kekinian.&rdquo;
+      </p>
+            {/* Foto di tengah */}
+      <div className="fu d3" style={{flexShrink:0,position:"relative",marginBottom:40}}>
+        <div className="hero-photo-img" style={{position:"relative",width:"clamp(150px,16vw,200px)",overflow:"hidden",border:`2px solid ${C.emas}`}}>
+          <img src="/kosmos final.png" alt="Kosmas Simangunsong" style={{display:"block",width:"100%",height:"auto",objectFit:"cover"}}/>
         </div>
+      </div>
 
-        {/* Scroll indicator */}
-        <div className="fu d21" style={{position:"absolute",bottom:32,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
-          
-          <div style={{width:1,height:38,background:`linear-gradient(to bottom,${C.emasT},transparent)`,animation:"scrollPulse 2s ease infinite"}}/>
-        </div>
-      </section>
+      {/* Tombol di bawah foto & teks */}
+      <div className="fu d15 hero-btns" style={{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"}}>
+        <Link href="/tarombo" className="btn-p" style={btnPrimary}>Jelajahi Pohon Silsilah</Link>
+        <Link href="/tentang" className="btn-s" style={btnSecondary}>Tentang Website</Link>
+        <Link href="/cari"    className="btn-s" style={btnSecondary}>Cari Anggota</Link>
+      </div>
+    </div>
+  </div>
 
-      <GorgaDivider/>
+  {/* Scroll indicator */}
+  <div className="fu d21" style={{position:"absolute",bottom:32,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
+    <div style={{width:1,height:38,background:`linear-gradient(to bottom,${C.emasT},transparent)`,animation:"scrollPulse 2s ease infinite"}}/>
+  </div>
+</section>
+
 
       {/* ── Stats — data real dari DB ── */}
       <section className="stats-section" style={{position:"relative",zIndex:10,background:C.hitamL,borderTop:`1px solid rgba(201,168,76,.2)`,borderBottom:`1px solid rgba(201,168,76,.2)`,padding:"52px 56px"}}>
@@ -708,7 +671,6 @@ export default function HomePage() {
 
       {/* ── Donasi ── */}
       <section id="donasi" style={{position:"relative",zIndex:10,padding:"100px 56px",background:C.hitam,borderTop:`1px solid rgba(201,168,76,.1)`,overflow:"hidden"}}>
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:600,height:600,background:"radial-gradient(ellipse,rgba(201,168,76,.04) 0%,transparent 70%)",pointerEvents:"none"}}/>
         <RevealDiv>
           <SectionHeader tag="Dukung Kami" title="Jaga Warisan" gold="Bersama" sub="Bantu kami melestarikan silsilah dan budaya Batak Toba untuk generasi mendatang"/>
 
@@ -846,7 +808,6 @@ export default function HomePage() {
 
             {/* ── CTA ──
       <section id="tentang" style={{position:"relative",zIndex:10,padding:"120px 40px",textAlign:"center",background:C.hitamL,overflow:"hidden"}}>
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:600,height:600,background:"radial-gradient(ellipse,rgba(139,26,26,.2) 0%,transparent 70%)",pointerEvents:"none"}}/>
         <RevealDiv style={{position:"relative",zIndex:1}}>
           <div style={{marginBottom:36}}><UlosStripe/></div>
           <h2 style={{fontFamily:"'Cinzel Decorative',cursive",color:C.putih,marginBottom:18,lineHeight:1.32,fontSize:"clamp(1.6rem,3vw,2.8rem)"}}>

@@ -1,11 +1,18 @@
 body{
-  font-family: Arial, sans-serif;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 16px;
 }
+*, *::before, *::after{
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+h1,h2,h3,h4{
+  font-family:Georgia, "Times New Roman", serif!important;
+}
+p,a,button,input,select,textarea,label,li{
+  font-family:Inter, "Segoe UI", Arial, sans-serif!important;
+}
+img{max-width:100%;}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.header-gorga{
-  border-bottom:6px solid #8b0000;
-  background-image:url("/gorga.png");
-  background-size:200px;
-}
