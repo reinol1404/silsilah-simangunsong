@@ -504,7 +504,7 @@ export default function HomePage() {
             </button>
 
             <img
-              src="/disclaimer2.png"
+              src="/pembuka.png"
               alt="Disclaimer"
               style={{
                 display:"block",
@@ -803,6 +803,7 @@ export default function HomePage() {
               Ingin nama Anda tercantum di sini? Hubungi kami setelah berdonasi.
             </p>
           </RevealDiv>
+          
         </section>
       )}
 

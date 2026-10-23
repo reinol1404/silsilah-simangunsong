@@ -19,6 +19,8 @@ interface Person {
   pasangan:     { id: number; nama: string }[]; // Array untuk support poligami
 }
 
+const PAGE_SIZE = 50;
+
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
   merah:"#8B1A1A", merahTua:"#5C0E0E", merahTerang:"#C0392B",
@@ -270,7 +272,7 @@ const GenHeader = ({ gen, list, isMobile }: {
 }) => {
   const directCount = list.filter(p => !p.isIstri).length;
   const spouseCount = list.filter(p => p.isIstri).length;
-  
+
   return (
     <div style={{display:"flex",alignItems:"center",gap:isMobile?10:16,margin:isMobile?"24px 0 8px":"32px 0 10px"}}>
       <div style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:isMobile?"1.1rem":"1.4rem",fontWeight:700,color:C.emas,minWidth:isMobile?38:52,textAlign:"center",textShadow:`0 0 20px rgba(201,168,76,.3)`}}>
@@ -297,6 +299,61 @@ const Skeleton = ({isMobile}:{isMobile:boolean}) => (
   </div>
 );
 
+// ─── Pagination ───────────────────────────────────────────────────────────────
+function getPageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "…")[] = [1];
+  const start = Math.max(2, current - 1);
+  const end   = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push("…");
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push("…");
+  pages.push(total);
+  return pages;
+}
+
+const Pagination = ({ page, totalPages, totalItems, onChange, isMobile }: {
+  page: number; totalPages: number; totalItems: number;
+  onChange: (p: number) => void; isMobile: boolean;
+}) => {
+  if (totalPages <= 1) return null;
+  const from = (page - 1) * PAGE_SIZE + 1;
+  const to   = Math.min(page * PAGE_SIZE, totalItems);
+
+  const btn = (active: boolean, disabled = false): React.CSSProperties => ({
+    fontFamily: "'Cinzel',serif",
+    fontSize: isMobile ? "0.55rem" : "0.62rem",
+    letterSpacing: "0.1em",
+    color: active ? C.hitam : (disabled ? "rgba(201,168,76,.25)" : C.kremT),
+    background: active ? `linear-gradient(135deg,${C.emas},${C.emasM})` : "transparent",
+    border: `1px solid ${active ? C.emas : "rgba(201,168,76,.2)"}`,
+    minWidth: isMobile ? 34 : 38,
+    height: isMobile ? 34 : 38,
+    padding: "0 10px",
+    cursor: disabled ? "not-allowed" : "pointer",
+    transition: "all .25s",
+  });
+
+  return (
+    <div style={{ marginTop: isMobile ? 24 : 36, textAlign: "center" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: isMobile ? 4 : 6, flexWrap: "wrap" }}>
+        <button style={btn(false, page === 1)} disabled={page === 1} onClick={() => onChange(page - 1)}>‹</button>
+        {getPageNumbers(page, totalPages).map((n, i) =>
+          n === "…" ? (
+            <span key={`dots-${i}`} style={{ color: C.emasT, opacity: .6, padding: "0 4px" }}>…</span>
+          ) : (
+            <button key={n} style={btn(n === page)} onClick={() => onChange(n)}>{n}</button>
+          )
+        )}
+        <button style={btn(false, page === totalPages)} disabled={page === totalPages} onClick={() => onChange(page + 1)}>›</button>
+      </div>
+      <p style={{ fontFamily: "'IM Fell English',serif", fontStyle: "italic", fontSize: "0.8rem", color: C.emasT, opacity: .7, marginTop: 10 }}>
+        Menampilkan {from}–{to} dari {totalItems} anggota
+      </p>
+    </div>
+  );
+};
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function PersonListPage() {
   const router = useRouter();
@@ -309,6 +366,7 @@ export default function PersonListPage() {
   const [scrolled, setScrolled] = useState(false);
   const [isAdmin,  setIsAdmin]  = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [page,     setPage]     = useState(1);
   const firstFetch = useRef(true);
 
   useEffect(()=>{
@@ -350,6 +408,9 @@ export default function PersonListPage() {
     return ()=>clearTimeout(t);
   },[search,gender,fetchData]);
 
+  // Kembali ke halaman 1 saat pencarian / filter berubah
+  useEffect(()=>{ setPage(1); },[search,gender]);
+
   async function handleDelete(id: number) {
     if (!confirm("Yakin ingin menghapus anggota ini?\nSemua data relasi juga akan dihapus.")) return;
     try {
@@ -378,7 +439,7 @@ export default function PersonListPage() {
       }
       const added = new Set<number>();
       const ordered: Person[] = [];
-      
+
       // Urutkan: Direct descendants dulu (bukan istri), lalu sisipkan istri-istrinya
       for (const p of list) {
         if (p.isIstri) continue;
@@ -386,7 +447,7 @@ export default function PersonListPage() {
         const spouses = spouseByPartnerId.get(p.id) ?? [];
         for (const spouse of spouses) {
           if (!added.has(spouse.id)) {
-            ordered.push(spouse); 
+            ordered.push(spouse);
             added.add(spouse.id);
           }
         }
@@ -397,11 +458,35 @@ export default function PersonListPage() {
     });
   },[persons]);
 
+  // Daftar datar sesuai urutan tampil (generasi → anggota → pasangan)
+  const flatList = useMemo(()=>grouped.flatMap(([,list])=>list),[grouped]);
+
+  const totalPages  = Math.max(1, Math.ceil(flatList.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart   = (currentPage - 1) * PAGE_SIZE;
+
+  // Nomor urut global (berlanjut antar halaman)
   const personIndices = useMemo(()=>{
     const map = new Map<number,number>();
-    persons.forEach((p,i)=>map.set(p.id,i));
+    flatList.forEach((p,i)=>map.set(p.id,i));
     return map;
-  },[persons]);
+  },[flatList]);
+
+  // Potong 50 data, lalu kelompokkan ulang per generasi
+  const pagedGrouped = useMemo(()=>{
+    const slice = flatList.slice(pageStart, pageStart + PAGE_SIZE);
+    const map = new Map<number,Person[]>();
+    for (const p of slice) {
+      if (!map.has(p.generasi)) map.set(p.generasi,[]);
+      map.get(p.generasi)!.push(p);
+    }
+    return [...map.entries()].sort((a,b)=>a[0]-b[0]);
+  },[flatList,pageStart]);
+
+  const goToPage = (n: number) => {
+    setPage(n);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const directDescendants = persons.filter(p=>!p.isIstri);
   const totalKeturunan = directDescendants.length;
@@ -613,7 +698,7 @@ export default function PersonListPage() {
 
         {!loading && !error && grouped.length>0 && (
           <div className="fu d3">
-            {grouped.map(([gen,list])=>(
+            {pagedGrouped.map(([gen,list])=>(
               <div key={gen}>
                 <GenHeader
                   gen={gen}
@@ -642,6 +727,15 @@ export default function PersonListPage() {
                 ))}
               </div>
             ))}
+
+            {/* Pagination */}
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              totalItems={flatList.length}
+              onChange={goToPage}
+              isMobile={isMobile}
+            />
 
             {/* Bottom summary */}
             <div style={{marginTop:isMobile?32:48,textAlign:"center",padding:isMobile?"20px 14px":"24px",border:`1px solid rgba(201,168,76,.1)`,background:"rgba(26,22,18,.5)"}}>
