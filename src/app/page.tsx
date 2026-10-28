@@ -928,13 +928,13 @@ export default function HomePage() {
           <span style={{fontFamily:"'IM Fell English',serif",fontSize:"0.7rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",textAlign:"center"}}>Jelajahi Pohon Silsilah</span>
           <span style={{fontSize:"1.1rem"}} aria-hidden="true">→</span>
         </Link>
-        <Link href="/tentang" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>03</span>
+        <Link href="/person" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>02</span>
           <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Cari & Lihat Daftar Anggota</span>
           <span style={{color:C.emas}} aria-hidden="true">→</span>
         </Link>
         <Link href="/tentang" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>04</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>03</span>
           <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Tentang Website</span>
           <span style={{color:C.emas}} aria-hidden="true">→</span>
         </Link>
