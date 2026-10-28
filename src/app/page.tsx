@@ -36,7 +36,7 @@ const C = {
 };
 
 // ─── Nav links & footer ───────────────────────────────────────────────────────
-const navLinks  = [["/tarombo","Tarombo"],["#fitur","Fitur"],["/tentang","Tentang"],["/cari","Cari"],["#donasi","Donasi"]];
+const navLinks  = [["/tarombo","Pohon Silsilah"],["/person","Daftar Anggota"],["/fitur","Fitur"],["/tentang","Tentang"],["#donasi","Donasi"]];
 const footerCols = [
   { title:"Navigasi", links:[["/tarombo","Pohon Silsilah"],["/person","Daftar Anggota"],["/tentang","Tentang Klan"],["/cari","Pencarian"],["/tambah","Tambah Anggota"]] },
   { title:"Akses",    links:[["/login","Masuk Admin"],["/admin","Dashboard Admin"]] },
@@ -524,42 +524,305 @@ export default function HomePage() {
         )}
       </nav>
 
-      {/* ── Sidebar navigasi khusus ponsel ── */}
+      
+
+      {/* ── Premium Mobile Navigation ── */}
       {mobileMenuOpen && (
         <div
           role="presentation"
           onClick={() => setMobileMenuOpen(false)}
-          style={{position:"fixed",inset:0,zIndex:70,background:"rgba(13,11,8,.68)",backdropFilter:"blur(2px)"}}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 999,
+            background: "rgba(5, 5, 4, 0.82)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            animation: "menuOverlayIn .25s ease both",
+          }}
         >
           <aside
             role="dialog"
             aria-modal="true"
             aria-label="Menu navigasi"
-            onClick={e => e.stopPropagation()}
-            style={{position:"absolute",top:0,right:0,width:"min(84vw,340px)",height:"100%",padding:"26px 22px",background:C.hitamL,borderLeft:`1px solid rgba(201,168,76,.28)`,display:"flex",flexDirection:"column",animation:"popupIn .22s ease"}}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "min(88vw, 380px)",
+              height: "100%",
+              overflowY: "auto",
+              boxSizing: "border-box",
+              padding: "28px 22px 24px",
+              background:
+                "radial-gradient(ellipse at top right, rgba(201,168,76,.12), transparent 45%), linear-gradient(160deg, #17140f 0%, #0b0a08 60%, #12100c 100%)",
+              borderLeft: "1px solid rgba(201,168,76,.4)",
+              boxShadow: "-20px 0 70px rgba(0,0,0,.45)",
+              display: "flex",
+              flexDirection: "column",
+              animation: "menuPanelIn .3s cubic-bezier(.2,.8,.2,1) both",
+            }}
           >
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:20,borderBottom:`1px solid rgba(201,168,76,.16)`}}>
-              <span style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"0.82rem",color:C.emas}}>Silsilah Simangunsong</span>
-              <button type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Tutup menu" style={{width:36,height:36,border:`1px solid rgba(201,168,76,.3)`,background:"transparent",color:C.kremT,cursor:"pointer",fontSize:"1.2rem"}}>×</button>
+            {/* Header */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                paddingBottom: 22,
+                borderBottom: "1px solid rgba(201,168,76,.25)",
+              }}
+            >
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontFamily: "'IM Fell English', serif",
+                    fontSize: "clamp(1.05rem, 4vw, 1.3rem)",
+                    color: C.emas,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  Silsilah Simangunsong
+                </div>
+                <div
+                  style={{
+                    marginTop: 6,
+                    fontFamily: "'IM Fell English', serif",
+                    fontSize: ".7rem",
+                    fontStyle: "italic",
+                    letterSpacing: ".08em",
+                    color: C.kremT,
+                    opacity: .72,
+                  }}
+                >
+                  Satu keluarga, satu akar, satu cerita
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Tutup menu"
+                style={{
+                  flexShrink: 0,
+                  width: 42,
+                  height: 42,
+                  display: "grid",
+                  placeItems: "center",
+                  border: "1px solid rgba(201,168,76,.4)",
+                  borderRadius: "50%",
+                  background: "rgba(201,168,76,.06)",
+                  color: C.emas,
+                  cursor: "pointer",
+                  fontSize: "1.5rem",
+                  transition: "background .2s ease",
+                }}
+              >
+                ×
+              </button>
             </div>
-            <nav aria-label="Navigasi ponsel" style={{display:"flex",flexDirection:"column",gap:8,marginTop:24}}>
-              {navLinks.map(([href,label], index) => {
-                const style = {display:"flex",alignItems:"center",justifyContent:"space-between",padding:"15px 14px",border:`1px solid rgba(201,168,76,.14)`,background:index === 0 ? "rgba(201,168,76,.08)" : "transparent",color:index === 0 ? C.emas : C.kremT,textDecoration:"none",fontFamily:"'Cinzel',serif",fontSize:"0.68rem",letterSpacing:"0.14em",textTransform:"uppercase"} as const;
-                return href.startsWith("/") ? (
-                  <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)} style={style}>{label}<span>→</span></Link>
-                ) : (
-                  <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} style={style}>{label}<span>→</span></a>
+
+            {/* Decorative divider */}
+            <div
+              aria-hidden="true"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                margin: "22px 0 16px",
+                color: C.emas,
+                opacity: .75,
+              }}
+            >
+              <span style={{ height: 1, flex: 1, background: "linear-gradient(90deg, transparent, #c9a84c)" }} />
+              <span style={{ fontSize: ".8rem" }}>✦</span>
+              <span style={{ height: 1, flex: 1, background: "linear-gradient(90deg, #c9a84c, transparent)" }} />
+            </div>
+
+            {/* Navigation links */}
+            <nav
+              aria-label="Navigasi ponsel"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              {navLinks.map(([href, label], index) => {
+                const descriptions = [
+                  "Jelajahi pohon silsilah",
+                  "Lihat dan Cari Daftar Anggota",
+                  "Lihat fitur yang tersedia",
+                  "Informasi Tentang Halaman",
+                  "Mari menjadi bagian dari kontributor",
+                  "Tentang website ini",
+                  "Hubungi kami",
+                ];
+
+                const icons = ["⌂", "♧", "♙", "▧", "▤", "ⓘ", "✉"];
+
+                const itemStyle = {
+                  position: "relative" as const,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 13,
+                  padding: "14px 13px",
+                  border: "1px solid rgba(201,168,76,.18)",
+                  borderRadius: 10,
+                  background:
+                    index === 0
+                      ? "linear-gradient(110deg, rgba(201,168,76,.17), rgba(201,168,76,.035))"
+                      : "rgba(255,255,255,.018)",
+                  color: index === 0 ? C.emas : C.kremT,
+                  textDecoration: "none",
+                  transition: "background .2s ease, border-color .2s ease",
+                };
+
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={itemStyle}
+                  >
+                    {/* Icon */}
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 38,
+                        height: 38,
+                        flexShrink: 0,
+                        display: "grid",
+                        placeItems: "center",
+                        borderRadius: 8,
+                        border: "1px solid rgba(201,168,76,.22)",
+                        background: "rgba(201,168,76,.07)",
+                        color: C.emas,
+                        fontSize: "1.35rem",
+                      }}
+                    >
+                      {icons[index % icons.length]}
+                    </span>
+
+                    {/* Label and description */}
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span
+                        style={{
+                          display: "block",
+                          fontFamily: "'IM Fell English', serif",
+                          fontSize: ".88rem",
+                          letterSpacing: ".09em",
+                          textTransform: "uppercase",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          marginTop: 3,
+                          fontFamily: "'IM Fell English', serif",
+                          fontSize: ".76rem",
+                          fontStyle: "italic",
+                          color: C.kremT,
+                          opacity: .65,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {descriptions[index] || "Jelajahi website keluarga"}
+                      </span>
+                    </span>
+
+                    {/* Arrow */}
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        flexShrink: 0,
+                        color: C.emas,
+                        fontSize: "1.15rem",
+                        opacity: .85,
+                      }}
+                    >
+                      →
+                    </span>
+                  </Link>
                 );
               })}
             </nav>
-            <div style={{marginTop:"auto",paddingTop:20,borderTop:`1px solid rgba(201,168,76,.16)`}}>
-              <Link href={isAdmin ? "/admin" : "/login"} onClick={() => setMobileMenuOpen(false)} className="btn-p" style={{...btnPrimary,width:"100%",textAlign:"center",padding:"13px 16px"}}>
+
+            {/* Admin section */}
+            <div
+              style={{
+                marginTop: "auto",
+                paddingTop: 25,
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  marginBottom: 18,
+                }}
+              >
+                <span style={{ height: 1, flex: 1, background: "rgba(201,168,76,.25)" }} />
+                <span style={{ color: C.emas, fontSize: ".7rem", letterSpacing: ".16em" }}>
+                  AKSES KHUSUS
+                </span>
+                <span style={{ height: 1, flex: 1, background: "rgba(201,168,76,.25)" }} />
+              </div>
+
+              <Link
+                href={isAdmin ? "/admin" : "/login"}
+                onClick={() => setMobileMenuOpen(false)}
+                className="btn-p"
+                style={{
+                  ...btnPrimary,
+                  boxSizing: "border-box",
+                  width: "100%",
+                  minHeight: 58,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                  padding: "15px 18px",
+                  border: "1px solid rgba(201,168,76,.75)",
+                  borderRadius: 9,
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontFamily: "'IM Fell English', serif",
+                  fontSize: ".95rem",
+                  letterSpacing: ".08em",
+                  boxShadow: "0 6px 24px rgba(0,0,0,.2)",
+                }}
+              >
+                <span aria-hidden="true">{isAdmin ? "♙" : "◇"}</span>
                 {isAdmin ? "Dashboard Admin" : "Masuk Admin"}
+                <span aria-hidden="true">→</span>
               </Link>
+
+              <p
+                style={{
+                  margin: "16px 0 0",
+                  textAlign: "center",
+                  fontFamily: "'IM Fell English', serif",
+                  fontStyle: "italic",
+                  fontSize: ".72rem",
+                  color: C.kremT,
+                  opacity: .45,
+                }}
+              >
+                Merawat kisah, menyatukan generasi
+              </p>
             </div>
           </aside>
         </div>
       )}
+
 
       {/* ── Popup Foto: pembuka lalu penutup ── */}
       {popupStep && (
@@ -661,18 +924,13 @@ export default function HomePage() {
       {/* Navigasi utama di bawah foto */}
       <div className="fu d15 hero-btns" style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:10,width:"min(100%,600px)",marginTop:6,padding:10,border:`1px solid rgba(201,168,76,.14)`,background:"rgba(13,11,8,.45)"}}>
         <Link href="/tarombo" className="hero-nav-card hero-nav-primary" style={{...heroNavButton(true),gridColumn:"1 / -1"}}>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.56rem",letterSpacing:".18em",opacity:.7}}>01</span>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.7rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",textAlign:"center"}}>Jelajahi Pohon Silsilah</span>
+          <span style={{fontFamily:"'IM Fell English',serif",fontSize:"0.56rem",letterSpacing:".18em",opacity:.7}}>01</span>
+          <span style={{fontFamily:"'IM Fell English',serif",fontSize:"0.7rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",textAlign:"center"}}>Jelajahi Pohon Silsilah</span>
           <span style={{fontSize:"1.1rem"}} aria-hidden="true">→</span>
         </Link>
-        <Link href="/person" className="hero-nav-card" style={heroNavButton()}>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>02</span>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Daftar Anggota</span>
-          <span style={{color:C.emas}} aria-hidden="true">→</span>
-        </Link>
-        <Link href="/cari" className="hero-nav-card" style={heroNavButton()}>
+        <Link href="/tentang" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
           <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>03</span>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Cari Anggota</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Cari & Lihat Daftar Anggota</span>
           <span style={{color:C.emas}} aria-hidden="true">→</span>
         </Link>
         <Link href="/tentang" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
@@ -953,33 +1211,7 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer style={{position:"relative",zIndex:10,background:C.hitam,borderTop:`1px solid rgba(201,168,76,.15)`,padding:"56px 56px 36px"}}>
-        <div className="footer-grid" style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:52,marginBottom:44,maxWidth:960,margin:"0 auto 44px"}}>
-          <div>
-            <span style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"1.1rem",color:C.emas,display:"block",marginBottom:14}}>Silsilah Simangunsong</span>
-            <p style={{fontFamily:"'IM Fell English',serif",fontStyle:"italic",fontSize:"0.92rem",color:C.kremT,opacity:.6,lineHeight:1.72,maxWidth:270}}>
-              Platform digital pelestarian silsilah dan tarombo marga Simangunsong. Menyambungkan generasi, menjaga akar budaya Batak Toba.
-            </p>
-            {stats && (
-              <p style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:"0.15em",color:C.emasT,marginTop:16}}>
-                {stats.totalPerson} anggota · {stats.totalMarriage} pernikahan tercatat
-              </p>
-            )}
-          </div>
-          {footerCols.map(col => (
-            <div key={col.title}>
-              <h4 style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:"0.3em",textTransform:"uppercase",color:C.emas,marginBottom:18}}>{col.title}</h4>
-              <ul style={{listStyle:"none",padding:0,display:"flex",flexDirection:"column",gap:10}}>
-                {col.links.map(([href,label]) => (
-                  <li key={href}>
-                    <Link href={href} className="footer-a" style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"0.92rem",color:C.kremT,opacity:.6,textDecoration:"none",transition:"all .3s"}}>
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        
         <div style={{borderTop:`1px solid rgba(201,168,76,.1)`,paddingTop:24,display:"flex",justifyContent:"space-between",alignItems:"center",maxWidth:960,margin:"0 auto",flexWrap:"wrap",gap:10}}>
           <p style={{fontFamily:"'Cinzel',serif",fontSize:"0.56rem",letterSpacing:"0.2em",color:C.kremT,opacity:.4,textTransform:"uppercase"}}>© 2025 Silsilah Simangunsong · Marga Na Gok</p>
           <p style={{fontFamily:"'Cinzel',serif",fontSize:"0.56rem",letterSpacing:"0.2em",color:C.kremT,opacity:.4,textTransform:"uppercase"}}>Horas · Horas · Horas</p>

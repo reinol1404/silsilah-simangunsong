@@ -16,3 +16,33 @@ img{max-width:100%;}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@keyframes menuOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes menuPanelIn {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes menuOverlayIn {
+    from, to { opacity: 1; }
+  }
+
+  @keyframes menuPanelIn {
+    from, to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
