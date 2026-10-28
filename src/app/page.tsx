@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, CSSProperties } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Stats {
@@ -176,6 +176,20 @@ const btnSecondary: CSSProperties = {
   transition:"all .3s",
 };
 
+const heroNavButton = (primary = false): CSSProperties => ({
+  minHeight: primary ? 58 : 54,
+  display:"flex",
+  alignItems:"center",
+  justifyContent:"space-between",
+  gap:10,
+  padding:"13px 16px",
+  textDecoration:"none",
+  border: primary ? `1px solid ${C.emas}` : `1px solid rgba(201,168,76,.24)`,
+  background: primary ? `linear-gradient(135deg,${C.emas},${C.emasM})` : "rgba(13,11,8,.58)",
+  color: primary ? C.hitam : C.kremT,
+  transition:"transform .25s ease, background .25s ease, border-color .25s ease",
+});
+
 const SectionHeader = ({tag,title,gold,sub,light=false}:{tag:string;title:string;gold:string;sub:string;light?:boolean}) => (
   <div style={{textAlign:"center",marginBottom:64}}>
     <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.63rem",letterSpacing:"0.4em",textTransform:"uppercase",color:light?C.emasM:C.merahTerang,display:"block",marginBottom:14}}>{tag}</span>
@@ -217,9 +231,11 @@ export default function HomePage() {
   const [stats,      setStats]      = useState<Stats | null>(null);
   const [donaturs,   setDonaturs]   = useState<Donatur[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
   const [statsActive, setStatsActive] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showPhotoPopup, setShowPhotoPopup] = useState(false);
+  const [popupStep, setPopupStep] = useState<"pembuka" | "penutup" | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   
 
@@ -248,6 +264,14 @@ export default function HomePage() {
       .finally(() => setLoadingStats(false));
   }, []);
 
+  // Pengunjung dihitung satu kali per browser melalui cookie anonim dari server.
+  useEffect(() => {
+    fetch("/api/page-visits/home", { method: "POST" })
+      .then(r => r.json())
+      .then(res => { if (res.success) setVisitorCount(res.data.total); })
+      .catch(() => {});
+  }, []);
+
   // Fetch donatur dari API
   useEffect(() => {
     fetch("/api/donatur")
@@ -267,20 +291,52 @@ export default function HomePage() {
     return () => obs.disconnect();
   }, []);
 
+  const closePhotoPopup = useCallback(() => {
+    if (popupStep === "pembuka") {
+      setPopupStep("penutup");
+      return;
+    }
+
+    if (popupStep === "penutup") {
+      try {
+        sessionStorage.setItem("silsilah-popup-sequence-shown-v2", "true");
+      } catch {
+        // Abaikan jika storage tidak tersedia.
+      }
+      setPopupStep(null);
+    }
+  }, [popupStep]);
+
   useEffect(() => {
-    if (!showPhotoPopup) return;
+    if (!popupStep) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setShowPhotoPopup(false);
+      if (e.key === "Escape") closePhotoPopup();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showPhotoPopup]);
+  }, [popupStep, closePhotoPopup]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
 
   
-  // Popup disclaimer muncul 3 detik setelah website dibuka,
+  // Rangkaian popup muncul 3 detik setelah website dibuka,
   // tetapi hanya sekali selama sesi tab browser.
   useEffect(() => {
-    const storageKey = "silsilah-disclaimer-shown";
+    const storageKey = "silsilah-popup-sequence-shown-v2";
 
     try {
       if (sessionStorage.getItem(storageKey) === "true") {
@@ -291,13 +347,7 @@ export default function HomePage() {
     }
 
     const timer = window.setTimeout(() => {
-      setShowPhotoPopup(true);
-
-      try {
-        sessionStorage.setItem(storageKey, "true");
-      } catch {
-        // Abaikan jika storage tidak tersedia.
-      }
+      setPopupStep("pembuka");
     }, 3000);
 
     return () => window.clearTimeout(timer);
@@ -353,6 +403,9 @@ export default function HomePage() {
         .person-card > div:hover { border-color:rgba(201,168,76,.35)!important; transform:translateY(-3px); }
         .donate-card:hover { transform:translateY(-4px) !important; }
         .home-popup-close:hover { color:${C.hitam}!important; border-color:${C.emas}!important; background:${C.emas}!important; }
+        .hero-nav-card:hover { transform:translateY(-3px); border-color:${C.emas}!important; background:rgba(201,168,76,.11)!important; }
+        .hero-nav-primary:hover { background:linear-gradient(135deg,${C.emasM},${C.emas})!important; }
+        .mobile-menu-toggle { display:none; }
         h1,h2,h3,h4 { font-family:Georgia, "Times New Roman", serif!important; text-shadow:none!important; }
         p,a,button,li { font-family:Inter, "Segoe UI", Arial, sans-serif!important; }
         *,*::before,*::after { box-shadow:none!important; }
@@ -364,6 +417,8 @@ export default function HomePage() {
           .nav-ul, .side-line { display:none!important; }
           nav { padding:12px 18px!important; }
           nav a[href="/"] { font-size:0.78rem!important; }
+          .nav-desktop-cta { display:none!important; }
+          .mobile-menu-toggle { display:flex!important; }
 
           /* Hero */
           .hero-section { padding:88px 20px 72px!important; min-height:auto!important; }
@@ -375,8 +430,8 @@ export default function HomePage() {
           .hero-subtitle { font-size:0.85rem!important; margin-bottom:14px!important; }
           .hero-desc { font-size:0.95rem!important; margin-bottom:10px!important; }
           .hero-quote { font-size:0.72rem!important; margin-bottom:24px!important; }
-          .hero-btns { justify-content:center!important; gap:10px!important; }
-          .hero-btns a { font-size:0.6rem!important; padding:11px 20px!important; }
+          .hero-btns { grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:10px!important; }
+          .hero-btns a { padding:11px 12px!important; }
 
           /* Sections padding */
           section, footer { padding-left:18px!important; padding-right:18px!important; }
@@ -446,19 +501,68 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
+        <button
+          type="button"
+          className="mobile-menu-toggle"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Buka menu navigasi"
+          aria-expanded={mobileMenuOpen}
+          style={{width:40,height:40,alignItems:"center",justifyContent:"center",border:`1px solid rgba(201,168,76,.45)`,background:"rgba(13,11,8,.6)",color:C.emas,cursor:"pointer"}}
+        >
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+            <path d="M1 1h18M1 8h18M1 15h18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+          </svg>
+        </button>
         {isAdmin ? (
-          <Link href="/admin" className="btn-p" style={{...btnPrimary,fontSize:"0.65rem",padding:"9px 22px",clipPath:"polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)"}}>
+          <Link href="/admin" className="btn-p nav-desktop-cta" style={{...btnPrimary,fontSize:"0.65rem",padding:"9px 22px",clipPath:"polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)"}}>
             Dashboard
           </Link>
         ) : (
-          <Link href="/login" className="btn-p" style={{...btnPrimary,fontSize:"0.65rem",padding:"9px 22px",clipPath:"polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)"}}>
+          <Link href="/login" className="btn-p nav-desktop-cta" style={{...btnPrimary,fontSize:"0.65rem",padding:"9px 22px",clipPath:"polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)"}}>
             Masuk
           </Link>
         )}
       </nav>
 
-      {/* ── Popup Foto ── */}
-      {showPhotoPopup && (
+      {/* ── Sidebar navigasi khusus ponsel ── */}
+      {mobileMenuOpen && (
+        <div
+          role="presentation"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{position:"fixed",inset:0,zIndex:70,background:"rgba(13,11,8,.68)",backdropFilter:"blur(2px)"}}
+        >
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu navigasi"
+            onClick={e => e.stopPropagation()}
+            style={{position:"absolute",top:0,right:0,width:"min(84vw,340px)",height:"100%",padding:"26px 22px",background:C.hitamL,borderLeft:`1px solid rgba(201,168,76,.28)`,display:"flex",flexDirection:"column",animation:"popupIn .22s ease"}}
+          >
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:20,borderBottom:`1px solid rgba(201,168,76,.16)`}}>
+              <span style={{fontFamily:"'Cinzel Decorative',cursive",fontSize:"0.82rem",color:C.emas}}>Silsilah Simangunsong</span>
+              <button type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Tutup menu" style={{width:36,height:36,border:`1px solid rgba(201,168,76,.3)`,background:"transparent",color:C.kremT,cursor:"pointer",fontSize:"1.2rem"}}>×</button>
+            </div>
+            <nav aria-label="Navigasi ponsel" style={{display:"flex",flexDirection:"column",gap:8,marginTop:24}}>
+              {navLinks.map(([href,label], index) => {
+                const style = {display:"flex",alignItems:"center",justifyContent:"space-between",padding:"15px 14px",border:`1px solid rgba(201,168,76,.14)`,background:index === 0 ? "rgba(201,168,76,.08)" : "transparent",color:index === 0 ? C.emas : C.kremT,textDecoration:"none",fontFamily:"'Cinzel',serif",fontSize:"0.68rem",letterSpacing:"0.14em",textTransform:"uppercase"} as const;
+                return href.startsWith("/") ? (
+                  <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)} style={style}>{label}<span>→</span></Link>
+                ) : (
+                  <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} style={style}>{label}<span>→</span></a>
+                );
+              })}
+            </nav>
+            <div style={{marginTop:"auto",paddingTop:20,borderTop:`1px solid rgba(201,168,76,.16)`}}>
+              <Link href={isAdmin ? "/admin" : "/login"} onClick={() => setMobileMenuOpen(false)} className="btn-p" style={{...btnPrimary,width:"100%",textAlign:"center",padding:"13px 16px"}}>
+                {isAdmin ? "Dashboard Admin" : "Masuk Admin"}
+              </Link>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* ── Popup Foto: pembuka lalu penutup ── */}
+      {popupStep && (
         <div style={{
           position:"fixed",
           inset:0,
@@ -480,8 +584,8 @@ export default function HomePage() {
             position:"relative",
           }}>
             <button
-              onClick={() => setShowPhotoPopup(false)}
-              aria-label="Tutup popup"
+              onClick={closePhotoPopup}
+              aria-label={popupStep === "pembuka" ? "Lanjut ke popup berikutnya" : "Tutup popup"}
               className="home-popup-close"
               style={{
                 position:"absolute",
@@ -504,8 +608,8 @@ export default function HomePage() {
             </button>
 
             <img
-              src="/pembuka.png"
-              alt="Disclaimer"
+              src={popupStep === "pembuka" ? "/pembuka.png" : "/penutup.png"}
+              alt={popupStep === "pembuka" ? "Pengumuman pembuka" : "Pengumuman penutup"}
               style={{
                 display:"block",
                 width:"auto",
@@ -554,11 +658,28 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Tombol di bawah foto & teks */}
-      <div className="fu d15 hero-btns" style={{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"}}>
-        <Link href="/tarombo" className="btn-p" style={btnPrimary}>Jelajahi Pohon Silsilah</Link>
-        <Link href="/tentang" className="btn-s" style={btnSecondary}>Tentang Website</Link>
-        <Link href="/cari"    className="btn-s" style={btnSecondary}>Cari Anggota</Link>
+      {/* Navigasi utama di bawah foto */}
+      <div className="fu d15 hero-btns" style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:10,width:"min(100%,600px)",marginTop:6,padding:10,border:`1px solid rgba(201,168,76,.14)`,background:"rgba(13,11,8,.45)"}}>
+        <Link href="/tarombo" className="hero-nav-card hero-nav-primary" style={{...heroNavButton(true),gridColumn:"1 / -1"}}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.56rem",letterSpacing:".18em",opacity:.7}}>01</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.7rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",textAlign:"center"}}>Jelajahi Pohon Silsilah</span>
+          <span style={{fontSize:"1.1rem"}} aria-hidden="true">→</span>
+        </Link>
+        <Link href="/person" className="hero-nav-card" style={heroNavButton()}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>02</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Daftar Anggota</span>
+          <span style={{color:C.emas}} aria-hidden="true">→</span>
+        </Link>
+        <Link href="/cari" className="hero-nav-card" style={heroNavButton()}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>03</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Cari Anggota</span>
+          <span style={{color:C.emas}} aria-hidden="true">→</span>
+        </Link>
+        <Link href="/tentang" className="hero-nav-card" style={{...heroNavButton(),gridColumn:"1 / -1"}}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.52rem",letterSpacing:".14em",color:C.emasT}}>04</span>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",letterSpacing:".08em",textTransform:"uppercase",textAlign:"center"}}>Tentang Website</span>
+          <span style={{color:C.emas}} aria-hidden="true">→</span>
+        </Link>
       </div>
     </div>
   </div>
@@ -569,6 +690,18 @@ export default function HomePage() {
   </div>
 </section>
 
+      {/* ── Pengunjung Website ── */}
+      <section style={{position:"relative",zIndex:10,padding:"42px 24px",background:C.hitam,borderTop:`1px solid rgba(201,168,76,.12)`,borderBottom:`1px solid rgba(201,168,76,.12)`}}>
+        <div style={{maxWidth:560,margin:"0 auto",textAlign:"center",padding:"28px 32px",border:`1px solid rgba(201,168,76,.24)`,background:"rgba(26,22,18,.72)",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${C.merahTua},${C.emas},${C.merahTua})`}}/>
+          <p style={{fontFamily:"'Cinzel',serif",fontSize:"0.58rem",letterSpacing:"0.28em",textTransform:"uppercase",color:C.emasT,marginBottom:12}}>
+            Jejak Kunjungan
+          </p>
+          <p style={{fontFamily:"'IM Fell English',serif",fontStyle:"italic",fontSize:"clamp(1.05rem,2.5vw,1.35rem)",color:C.kremT,lineHeight:1.55}}>
+            {visitorCount === null ? "Sedang menghitung pengunjung..." : <><span style={{fontFamily:"Inter, 'Segoe UI', sans-serif",fontWeight:700,fontStyle:"normal",fontSize:"1.3em",color:C.emas}}>{visitorCount.toLocaleString("id-ID")}</span> orang sudah berkunjung ke website ini.</>}
+          </p>
+        </div>
+      </section>
 
       {/* ── Stats — data real dari DB ── */}
       <section className="stats-section" style={{position:"relative",zIndex:10,background:C.hitamL,borderTop:`1px solid rgba(201,168,76,.2)`,borderBottom:`1px solid rgba(201,168,76,.2)`,padding:"52px 56px"}}>
@@ -617,12 +750,6 @@ export default function HomePage() {
                 <li key={step} style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",lineHeight:1.7}}>{step}</li>
               ))}
             </ol>
-            <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:20}}>
-              <Link href="/tarombo" className="btn-p" style={btnPrimary}>Buka Tarombo</Link>
-              <Link href="/tentang" className="btn-s" style={btnSecondary}>Tentang Website</Link>
-              <Link href="/person" className="btn-s" style={btnSecondary}>Lihat Daftar Anggota</Link>
-              <Link href="/cari" className="btn-s" style={btnSecondary}>Cari Nama Anggota</Link>
-            </div>
           </div>
         </RevealDiv>
       </section>

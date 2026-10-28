@@ -89,3 +89,15 @@ model Donatur {
 
   @@map("donatur")
 }
+
+// Satu baris untuk setiap browser anonim yang pernah membuka sebuah halaman.
+// ID pengunjung disimpan dalam cookie HttpOnly; alamat IP tidak disimpan.
+model PageVisitor {
+  id            Int      @id @default(autoincrement())
+  page          String
+  visitorId     String
+  firstVisitedAt DateTime @default(now())
+  lastVisitedAt  DateTime @updatedAt
+
+  @@unique([page, visitorId])
+}
